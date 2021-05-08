@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wiki-Writer", "Wiki-Writer.csproj", "{B8240349-C907-42F2-A038-BFB082305415}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Base-Mod", "..\Base-Mod\Base-Mod.csproj", "{4FB3FFEA-49C4-4822-9405-D67130F2688A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B8240349-C907-42F2-A038-BFB082305415}.Debug|x64.ActiveCfg = Debug|x64
+		{B8240349-C907-42F2-A038-BFB082305415}.Debug|x64.Build.0 = Debug|x64
+		{B8240349-C907-42F2-A038-BFB082305415}.Release|x64.ActiveCfg = Release|x64
+		{B8240349-C907-42F2-A038-BFB082305415}.Release|x64.Build.0 = Release|x64
+		{4FB3FFEA-49C4-4822-9405-D67130F2688A}.Debug|x64.ActiveCfg = Debug|x64
+		{4FB3FFEA-49C4-4822-9405-D67130F2688A}.Debug|x64.Build.0 = Debug|x64
+		{4FB3FFEA-49C4-4822-9405-D67130F2688A}.Release|x64.ActiveCfg = Release|x64
+		{4FB3FFEA-49C4-4822-9405-D67130F2688A}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9D587655-33CB-423A-9F83-05A556EF01C2}
+	EndGlobalSection
+EndGlobal
