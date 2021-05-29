@@ -1,8 +1,12 @@
 ﻿using System.IO;
 using System.Linq;
+using Base_Mod.Models;
+using JetBrains.Annotations;
 
 namespace Wiki_Writer.Wiki_Stuff {
     public static class WriteItemStackSizes {
+        [OnIslandSceneLoaded]
+        [UsedImplicitly]
         public static void Go() {
             var msg = Plugin.GetHeader() +
                       "Name | Stack Size\r\n" +

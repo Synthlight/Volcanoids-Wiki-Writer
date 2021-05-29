@@ -1,8 +1,12 @@
 ﻿using System.IO;
 using System.Linq;
+using Base_Mod.Models;
+using JetBrains.Annotations;
 
 namespace Wiki_Writer.Wiki_Stuff {
     public static class WriteRecipeProductionTimes {
+        [OnIslandSceneLoaded]
+        [UsedImplicitly]
         public static void Go() {
             var msg = Plugin.GetHeader() +
                       "Name | Production Time (s)\r\n" +

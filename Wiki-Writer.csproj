@@ -12,7 +12,9 @@
 		<DebugType>full</DebugType>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\Base-Mod\Base-Mod.csproj" />
+		<ProjectReference Include="..\Base-Mod\Base-Mod.csproj">
+			<Private>false</Private>
+		</ProjectReference>
 	</ItemGroup>
 	<ItemGroup>
 		<Reference Include="Assembly-CSharp">
@@ -32,16 +34,16 @@
 			<Private>false</Private>
 		</Reference>
 		<Reference Include="Unity.TextMeshPro">
-		  <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Volcanoids\Volcanoids_Data\Managed\Unity.TextMeshPro.dll</HintPath>
-		  <Private>false</Private>
+			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Volcanoids\Volcanoids_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="UnityEngine">
 			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Volcanoids\Volcanoids_Data\Managed\UnityEngine.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
 		<Reference Include="UnityEngine.AssetBundleModule">
-		  <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Volcanoids\Volcanoids_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
-		  <Private>false</Private>
+			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Volcanoids\Volcanoids_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="UnityEngine.CoreModule">
 			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Volcanoids\Volcanoids_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
@@ -56,19 +58,24 @@
 			<Private>false</Private>
 		</Reference>
 		<Reference Include="UnityEngine.UI">
-		  <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Volcanoids\Volcanoids_Data\Managed\UnityEngine.UI.dll</HintPath>
-		  <Private>false</Private>
+			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Volcanoids\Volcanoids_Data\Managed\UnityEngine.UI.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
-		  <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Volcanoids\Volcanoids_Data\Managed\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
-		  <Private>false</Private>
+			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Volcanoids\Volcanoids_Data\Managed\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 		<Reference Include="UnityEngine.UnityWebRequestModule">
-		  <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Volcanoids\Volcanoids_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
-		  <Private>false</Private>
+			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Volcanoids\Volcanoids_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 	</ItemGroup>
+	<ItemGroup>
+		<None Update=".manifest.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="call $(ProjectDir)..\Base-Mod\Post-Build.bat &quot;$(TargetName)&quot; &quot;$(OutDir)&quot;" />
+		<Exec Command="call $(ProjectDir)..\Base-Mod\Post-Build.bat &quot;$(TargetName)&quot; &quot;$(OutDir)&quot;"/>
 	</Target>
 </Project>

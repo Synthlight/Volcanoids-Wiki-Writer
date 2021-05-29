@@ -1,12 +1,16 @@
 ﻿using System.IO;
 using System.Reflection;
 using Base_Mod;
+using Base_Mod.Models;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Wiki_Writer.Wiki_Stuff {
     public static class WriteQuestOrder {
         private static readonly FieldInfo QUEST_MANAGER_M_QUESTS = typeof(QuestManager).GetField("m_quests", BindingFlags.NonPublic | BindingFlags.Instance);
 
+        [OnIslandSceneLoaded]
+        [UsedImplicitly]
         public static void Go() {
             var msg = Plugin.GetHeader() +
                       "Name | Priority | Type\r\n" +
