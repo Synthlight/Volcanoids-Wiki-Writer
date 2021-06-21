@@ -19,7 +19,7 @@ namespace Wiki_Writer.Wiki_Stuff {
                                     select category.name).Distinct();
 
             foreach (var name in categoryNameList) {
-                msg.Append($" - {Plugin.GetName(name)}\r\n");
+                msg.AppendLine($" - {Plugin.GetName(name)}");
             }
 
             File.WriteAllText(Plugin.BASE_OUTPUT_PATH + "Recipe Category Ids.txt", msg.ToString());
