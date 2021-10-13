@@ -11,7 +11,7 @@ namespace Wiki_Writer.Wiki_Stuff {
             var msg = Plugin.GetHeader() +
                       "Name | Info\r\n" +
                       "--- | ---\r\n";
-            foreach (var recipe in GameResources.Instance.Recipes.OrderBy(i => i.name)) {
+            foreach (var recipe in RuntimeAssetDatabase.Get<Recipe>().OrderBy(i => i.name)) {
                 var requirements = GetRequirements(recipe);
                 msg += $"{Plugin.GetName(recipe.name)} | <ul>" +
                        $"<li>AssetId: {recipe.AssetId}</li>" +

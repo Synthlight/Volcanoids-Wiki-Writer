@@ -13,7 +13,7 @@ namespace Wiki_Writer.Wiki_Stuff {
                       .Append("Name | Category (s)\r\n")
                       .Append("--- | ---\r\n");
 
-            foreach (var recipe in GameResources.Instance.Recipes.OrderBy(i => i.name)) {
+            foreach (var recipe in RuntimeAssetDatabase.Get<Recipe>().OrderBy(i => i.name)) {
                 var categoryNames    = recipe.Categories.Select(category => category.name);
                 var categoryListText = categoryNames == null || categoryNames.Length == 0 ? "{null}" : categoryNames.JoinString();
 

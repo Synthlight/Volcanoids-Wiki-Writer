@@ -12,7 +12,7 @@ namespace Wiki_Writer.Wiki_Stuff {
                       "Name | AssetId (GUID) | Type\r\n" +
                       "--- | --- | ---\r\n";
 
-            foreach (var item in (from dResource in RuntimeAssetStorage.GetAssets<DecalResource>()
+            foreach (var item in (from dResource in RuntimeAssetDatabase.Get<DecalResource>()
                                   select dResource.Category).Distinct()) {
                 msg += $"{Plugin.GetName(item.name)} | {item.AssetId} | {item.GetType()}\r\n";
             }

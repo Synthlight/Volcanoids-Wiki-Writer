@@ -11,7 +11,7 @@ namespace Wiki_Writer.Wiki_Stuff {
         public static void Go() {
             var msg = new StringBuilder(Plugin.GetHeader());
 
-            var categoryNameList = (from recipe in GameResources.Instance.Recipes
+            var categoryNameList = (from recipe in RuntimeAssetDatabase.Get<Recipe>()
                                     where recipe.Categories != null && recipe.Categories.Length > 0
                                     from category in recipe.Categories
                                     where !string.IsNullOrEmpty(category.name)

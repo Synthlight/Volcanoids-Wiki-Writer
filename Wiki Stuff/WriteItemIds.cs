@@ -11,7 +11,7 @@ namespace Wiki_Writer.Wiki_Stuff {
             var msg = Plugin.GetHeader() +
                       "Name | AssetId (GUID) | Type\r\n" +
                       "--- | --- | ---\r\n";
-            foreach (var item in GameResources.Instance.Items.OrderBy(i => i.name)) {
+            foreach (var item in RuntimeAssetDatabase.Get<ItemDefinition>().OrderBy(i => i.name)) {
                 msg += $"{Plugin.GetName(item.name)} | {item.AssetId} | {item.GetType()}\r\n";
             }
 

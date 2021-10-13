@@ -1,4 +1,7 @@
 {
     "LoadGroup": 0,
-    "Version": "1.0"
+    "Version": "1.0",
+    "UniqueModId": "Wiki-Writer",
+    "Title": "Wiki-Writer",
+    "MultiplayerMode": 2
 }

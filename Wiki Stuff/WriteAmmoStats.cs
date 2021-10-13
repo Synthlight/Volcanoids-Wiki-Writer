@@ -13,10 +13,9 @@ namespace Wiki_Writer.Wiki_Stuff {
                       .AppendLine("Name | AssetId (GUID) | Damage | Range")
                       .AppendLine("--- | --- | --- | ---");
 
-            var ammoList = from item in GameResources.Instance.Items
-                           where item is AmmoDefinition
+            var ammoList = from item in RuntimeAssetDatabase.Get<AmmoDefinition>()
                            orderby item.name
-                           select item as AmmoDefinition;
+                           select item;
 
             foreach (var ammo in ammoList) {
                 var stats = ammo.AmmoStats;

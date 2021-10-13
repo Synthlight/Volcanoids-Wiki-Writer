@@ -13,7 +13,7 @@ namespace Wiki_Writer.Wiki_Stuff {
                       .AppendLine("Name | AssetId (GUID)")
                       .AppendLine("--- | ---");
 
-            var categoryList = from category in GameResources.Instance.ItemCategoryLookup.Keys
+            var categoryList = from category in RuntimeAssetDatabase.Get<ItemCategory>()
                                orderby category.name
                                select category;
 
