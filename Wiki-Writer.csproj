@@ -25,6 +25,10 @@
 			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Volcanoids\Volcanoids_Data\Managed\Unity.MultiplayerHLAPI.Runtime.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
+		<Reference Include="Newtonsoft.Json">
+			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Volcanoids\Volcanoids_Data\Managed\Newtonsoft.Json.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
 		<Reference Include="Rock.Base">
 			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Volcanoids\Volcanoids_Data\Managed\Rock.Base.dll</HintPath>
 			<Private>false</Private>
@@ -76,6 +80,6 @@
 		</None>
 	</ItemGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="call $(ProjectDir)..\Base-Mod\Post-Build.bat &quot;$(TargetName)&quot; &quot;$(OutDir)&quot;"/>
+		<Exec Command="call $(ProjectDir)..\Base-Mod\Post-Build.bat &quot;$(TargetName)&quot; &quot;$(OutDir)&quot;" />
 	</Target>
 </Project>
