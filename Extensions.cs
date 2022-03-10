@@ -7,5 +7,9 @@ namespace Wiki_Writer {
         public static string GetLocalizedName(this ItemDefinition item) {
             return RuntimeAssetDatabase.Get<ItemDefinition>().First(def => def.AssetId == item.AssetId).NameLocalization;
         }
+
+        public static string GetLocalizedDesc(this ItemDefinition item) {
+            return RuntimeAssetDatabase.Get<ItemDefinition>().First(def => def.AssetId == item.AssetId).DescriptionLocalization;
+        }
     }
 }

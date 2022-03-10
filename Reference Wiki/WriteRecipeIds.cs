@@ -38,31 +38,49 @@ namespace Wiki_Writer.Reference_Wiki {
             WriteAllThingPage(DumpItems(wikiPages), "items", "Items");
             WriteAllThingPage(DumpRecipes(wikiPages), "recipes", "Recipes");
 
-            var json = JsonConvert.SerializeObject(wikiPages, Formatting.None);
+            var json = JsonConvert.SerializeObject(wikiPages, Formatting.None, new JsonSerializerSettings {
+                NullValueHandling = NullValueHandling.Ignore
+            });
             File.WriteAllText($@"{Plugin.REFERENCE_WIKI_OUTPUT_PATH}\pages.json", json);
         }
 
         private static List<string> DumpItems(ICollection<WikiPage> wikiPages) {
             const string path = Plugin.REFERENCE_WIKI_OUTPUT_PATH + ITEMS_NAMESPACE;
             EraseAndCreateDir(path);
+            //const string imgPath = path + "\\media";
+            //EraseAndCreateDir(imgPath);
 
             var pages = new List<string>();
 
             foreach (var item in RuntimeAssetDatabase.Get<ItemDefinition>()) {
                 var itemName      = Plugin.GetName(item.name);
+                var itemSafeName  = itemName.Replace(' ', '_');
                 var localizedName = item.GetLocalizedName();
+                var localizedDesc = item.GetLocalizedDesc();
 
-                using (var writer = new StreamWriter($@"{path}\{itemName.Replace(' ', '_')}.txt", false, Encoding.UTF8)) {
+                // Currently only happens for melee weapon ammo.
+                if (string.IsNullOrEmpty(localizedName)) continue;
+
+                //var png = item.Icon.texture.EncodeToPNG();
+                //File.WriteAllBytes($@"{path}\{itemSafeName}.txt", png);
+
+                using (var writer = new StreamWriter($@"{path}\{itemSafeName}.txt", false, Encoding.UTF8)) {
                     var wikiPage = new WikiPage {
-                        name = localizedName,
-                        type = "item",
-                        path = $"{ITEMS_NAMESPACE}:{itemName}"
+                        name        = localizedName,
+                        description = localizedDesc,
+                        type        = "item",
+                        path        = $"{ITEMS_NAMESPACE}:{itemName}"
                     };
 
                     writer.WriteLine($"====== {localizedName} ====");
                     writer.WriteLine($"| Internal name | {itemName} |");
                     writer.WriteLine($"| AssetId | {item.AssetId} |");
                     writer.WriteLine($"| Type | {item.GetType()} |");
+
+                    writer.WriteLine();
+                    writer.WriteLine("==== Description ====");
+                    writer.WriteLine(localizedDesc);
+                    writer.WriteLine();
 
                     // TODO: List various item parameters, its type, etc.
 
@@ -105,23 +123,41 @@ namespace Wiki_Writer.Reference_Wiki {
             const string path = Plugin.REFERENCE_WIKI_OUTPUT_PATH + RECIPES_NAMESPACE;
             EraseAndCreateDir(path);
 
-            var pages = new List<string>();
+            var scrapRecipes = new Dictionary<string, List<Recipe>>();
+            var pages        = new List<string>();
 
             foreach (var recipe in RuntimeAssetDatabase.Get<Recipe>()) {
                 var recipeName    = Plugin.GetName(recipe.name);
                 var localizedName = recipe.Output.Item.GetLocalizedName();
+                var localizedDesc = recipe.Output.Item.GetLocalizedDesc();
+                var isScrap       = false;
+
+                if (recipe.Categories.Any(cat => cat.name.StartsWith("Scrap"))) {
+                    if (scrapRecipes.ContainsKey(localizedName)) {
+                        scrapRecipes[localizedName].Add(recipe);
+                    } else {
+                        scrapRecipes[localizedName] = new List<Recipe> {recipe};
+                    }
+                    isScrap = true;
+                }
 
                 using (var writer = new StreamWriter($@"{path}\{recipeName.Replace(' ', '_')}.txt", false, Encoding.UTF8)) {
                     var wikiPage = new WikiPage {
-                        name = localizedName,
-                        type = "recipe",
-                        path = $"{RECIPES_NAMESPACE}:{recipeName}"
+                        name        = localizedName,
+                        description = localizedDesc,
+                        type        = "recipe",
+                        path        = $"{RECIPES_NAMESPACE}:{recipeName}"
                     };
 
                     writer.WriteLine($"====== {localizedName} Recipe ====");
                     writer.WriteLine($"| Internal name | {recipeName} |");
                     writer.WriteLine($"| AssetId | {recipe.AssetId} |");
                     writer.WriteLine($"| Output | [[{ITEMS_NAMESPACE}:{Plugin.GetName(recipe.Output.Item.name)}|{localizedName}]] |");
+
+                    writer.WriteLine();
+                    writer.WriteLine("==== Description ====");
+                    writer.WriteLine(localizedDesc);
+                    writer.WriteLine();
 
                     writer.WriteLine();
                     writer.WriteLine("==== Required Schematics ====");
@@ -135,7 +171,7 @@ namespace Wiki_Writer.Reference_Wiki {
                     }
 
                     writer.WriteLine();
-                    writer.WriteLine("==== Required Inputs ====");
+                    writer.WriteLine("==== Required Items [Quantity] ====");
                     writer.WriteLine();
 
                     foreach (var input in recipe.Inputs) {
@@ -173,6 +209,43 @@ namespace Wiki_Writer.Reference_Wiki {
                     writer.Write(Plugin.GetFooter());
 
                     pages.Add($"  * [[{RECIPES_NAMESPACE}:{recipeName}|{localizedName}]] ({recipeName})");
+
+                    // Don't track individual scrap recipes in the json.
+                    if (!isScrap) {
+                        wikiPages.Add(wikiPage);
+                    }
+                }
+            }
+
+            // Scrap meta recipes.
+            foreach (var localizedName in scrapRecipes.Keys) {
+                var recipes    = scrapRecipes[localizedName];
+                var metaName   = localizedName + " Scrap Recipes";
+                var safeName   = metaName.Replace(' ', '_');
+                var outputItem = recipes[0].Output.Item;
+
+                using (var writer = new StreamWriter($@"{path}\{safeName}.txt", false, Encoding.UTF8)) {
+                    var wikiPage = new WikiPage {
+                        name        = metaName,
+                        description = outputItem.GetLocalizedDesc(),
+                        type        = "recipe",
+                        path        = $"{RECIPES_NAMESPACE}:{safeName}"
+                    };
+
+                    writer.WriteLine($"====== {metaName} ====");
+                    writer.WriteLine($"This is an meta page to link to all the scrap recipes for {localizedName}.\\\\");
+                    writer.WriteLine("See the individual recipes for AssetIds and such.\\\\");
+                    writer.WriteLine($"Output: [[{ITEMS_NAMESPACE}:{Plugin.GetName(outputItem.name)}|{localizedName}]]");
+                    writer.WriteLine();
+
+                    foreach (var recipe in recipes) {
+                        var recipeName = Plugin.GetName(recipe.name);
+                        writer.WriteLine($"  * [[{RECIPES_NAMESPACE}:{recipeName}|{localizedName}]] ({recipeName})");
+                    }
+
+                    writer.WriteLine();
+                    writer.Write(Plugin.GetFooter());
+
                     wikiPages.Add(wikiPage);
                 }
             }
@@ -211,6 +284,7 @@ namespace Wiki_Writer.Reference_Wiki {
             public          string       name;
             public          string       type;
             public          string       path;
+            public          string       description;
             public readonly List<string> requiredUpgrades = new List<string>();
             public readonly List<string> requiredItems    = new List<string>();
             public readonly List<string> craftedIn        = new List<string>();
