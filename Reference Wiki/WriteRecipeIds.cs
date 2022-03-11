@@ -153,6 +153,13 @@ namespace Wiki_Writer.Reference_Wiki {
                         imagePath   = $"{ITEMS_NAMESPACE}:{outputItemName}.png"
                     };
 
+                    if (recipeName.Contains("Worktable") && recipeName != "WorktableRecipe") {
+                        if (recipeName.Contains("5x")) {
+                            wikiPage.name += " (Worktable, x5)";
+                        } else {
+                            wikiPage.name += " (Worktable)";
+                        }
+                    }
 
                     writer.WriteLine($"{{{{ {ITEMS_NAMESPACE}:{outputItemName}.png?200}}}}");
                     writer.WriteLine($"====== {localizedName} Recipe ====");
