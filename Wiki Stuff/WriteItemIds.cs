@@ -12,7 +12,7 @@ namespace Wiki_Writer.Wiki_Stuff {
                       "Name | AssetId (GUID) | Type\r\n" +
                       "--- | --- | ---\r\n";
             foreach (var item in RuntimeAssetDatabase.Get<ItemDefinition>().OrderBy(i => i.name)) {
-                msg += $"{Plugin.GetName(item.name)} | {item.AssetId} | {item.GetType()}\r\n";
+                msg += $"{item.GetName()} | {item.AssetId} | {item.GetType()}\r\n";
             }
 
             File.WriteAllText(Plugin.BASE_OUTPUT_PATH + "Item Ids.txt", msg);

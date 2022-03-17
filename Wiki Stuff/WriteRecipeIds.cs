@@ -13,11 +13,11 @@ namespace Wiki_Writer.Wiki_Stuff {
                       "--- | ---\r\n";
             foreach (var recipe in RuntimeAssetDatabase.Get<Recipe>().OrderBy(i => i.name)) {
                 var requirements = GetRequirements(recipe);
-                msg += $"{Plugin.GetName(recipe.name)} | <ul>" +
+                msg += $"{recipe.GetName()} | <ul>" +
                        $"<li>AssetId: {recipe.AssetId}</li>" +
                        "<li>Output Item:" +
                        "<ul>" +
-                       $"<li>Name: {Plugin.GetName(recipe.Output.Item.name)}</li>" +
+                       $"<li>Name: {recipe.Output.Item.GetName()}</li>" +
                        $"<li>AssetId: {recipe.Output.Item.AssetId}</li>" +
                        "</ul>" +
                        "</li>";
@@ -34,7 +34,7 @@ namespace Wiki_Writer.Wiki_Stuff {
 
         private static string GetRequirements(Recipe recipe) {
             return string.Join(", ", from input in recipe.RequiredUpgrades
-                                     select Plugin.GetName(input.name));
+                                     select input.GetName());
         }
     }
 }

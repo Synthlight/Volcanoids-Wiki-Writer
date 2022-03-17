@@ -19,7 +19,7 @@ namespace Wiki_Writer.Wiki_Stuff {
 
             foreach (var ammo in ammoList) {
                 var stats = ammo.AmmoStats;
-                msg.AppendLine($"{Plugin.GetName(ammo.name)} | {ammo.AssetId} | {stats.Damage} | {stats.Range}");
+                msg.AppendLine($"{ammo.GetName()} | {ammo.AssetId} | {stats.Damage} | {stats.Range}");
             }
 
             File.WriteAllText(Plugin.BASE_OUTPUT_PATH + "Ammo Stats.txt", msg.ToString());

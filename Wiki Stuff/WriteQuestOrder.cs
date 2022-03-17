@@ -22,7 +22,7 @@ namespace Wiki_Writer.Wiki_Stuff {
                     var quests = questManager.GetPrivateField<Quest[]>(QUEST_MANAGER_M_QUESTS);
                     if (quests?.Length > 0) {
                         foreach (var quest in quests) {
-                            msg += $"{Plugin.GetName(quest.name)} | {quest.Priority} | {GetQuestType(quest)}\r\n";
+                            msg += $"{quest.GetName()} | {quest.Priority} | {GetQuestType(quest)}\r\n";
                         }
                     }
                 }

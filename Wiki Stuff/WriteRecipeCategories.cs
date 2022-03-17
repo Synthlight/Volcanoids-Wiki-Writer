@@ -17,7 +17,7 @@ namespace Wiki_Writer.Wiki_Stuff {
                 var categoryNames    = recipe.Categories.Select(category => category.name);
                 var categoryListText = categoryNames == null || categoryNames.Length == 0 ? "{null}" : categoryNames.JoinString();
 
-                msg.Append($"{Plugin.GetName(recipe.name)} | {categoryListText}\r\n");
+                msg.Append($"{recipe.GetName()} | {categoryListText}\r\n");
             }
 
             File.WriteAllText(Plugin.BASE_OUTPUT_PATH + "Recipe Categories.txt", msg.ToString());

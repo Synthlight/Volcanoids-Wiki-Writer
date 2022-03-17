@@ -12,7 +12,7 @@ namespace Wiki_Writer.Wiki_Stuff {
                       "Name | Production Time (s)\r\n" +
                       "--- | ---\r\n";
             foreach (var recipe in RuntimeAssetDatabase.Get<Recipe>().OrderBy(i => i.name)) {
-                msg += $"{Plugin.GetName(recipe.name)} | {recipe.ProductionTime}\r\n";
+                msg += $"{recipe.GetName()} | {recipe.ProductionTime}\r\n";
             }
 
             File.WriteAllText(Plugin.BASE_OUTPUT_PATH + "Recipe Production Times.txt", msg);

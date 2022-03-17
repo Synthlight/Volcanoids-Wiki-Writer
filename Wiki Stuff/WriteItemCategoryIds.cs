@@ -18,7 +18,7 @@ namespace Wiki_Writer.Wiki_Stuff {
                                select category;
 
             foreach (var category in categoryList) {
-                msg.AppendLine($"{Plugin.GetName(category.name)} | {category.AssetId}");
+                msg.AppendLine($"{category.GetName()} | {category.AssetId}");
             }
 
             File.WriteAllText(Plugin.BASE_OUTPUT_PATH + "Item Category Ids.txt", msg.ToString());

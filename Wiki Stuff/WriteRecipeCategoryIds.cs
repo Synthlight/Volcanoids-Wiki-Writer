@@ -16,10 +16,10 @@ namespace Wiki_Writer.Wiki_Stuff {
                                     from category in recipe.Categories
                                     where !string.IsNullOrEmpty(category.name)
                                     orderby category.name
-                                    select category.name).Distinct();
+                                    select category.GetName()).Distinct();
 
             foreach (var name in categoryNameList) {
-                msg.AppendLine($" - {Plugin.GetName(name)}");
+                msg.AppendLine($" - {name}");
             }
 
             File.WriteAllText(Plugin.BASE_OUTPUT_PATH + "Recipe Category Ids.txt", msg.ToString());

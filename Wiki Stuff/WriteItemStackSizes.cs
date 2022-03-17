@@ -12,7 +12,7 @@ namespace Wiki_Writer.Wiki_Stuff {
                       "Name | Stack Size\r\n" +
                       "--- | ---\r\n";
             foreach (var item in RuntimeAssetDatabase.Get<ItemDefinition>().OrderBy(i => i.name)) {
-                msg += $"{Plugin.GetName(item.name)} | {item.MaxStack}\r\n";
+                msg += $"{item.GetName()} | {item.MaxStack}\r\n";
             }
 
             File.WriteAllText(Plugin.BASE_OUTPUT_PATH + "Item Stack Sizes.txt", msg);
