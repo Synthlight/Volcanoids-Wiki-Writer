@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Base_Mod;
 using UnityEngine;
 
 namespace Wiki_Writer.Reference_Wiki {
@@ -11,7 +12,11 @@ namespace Wiki_Writer.Reference_Wiki {
             writer.WriteLine();
             writer.WriteLine("==== Stats ====");
             AddStat(writer, wikiPage.stats, "Max Stack", item.MaxStack);
-            AddStatsFromPropertySet(writer, wikiPage.stats, item.Stats);
+            try {
+                AddStatsFromPropertySet(writer, wikiPage.stats, item.Stats);
+            } catch (Exception e) {
+                Debug.LogError($"Error writing stats for: `{item.Name}`, \"{e.Message}\".");
+            }
 
             if (item.TryGetComponent(out PowerPlant powerPlant)) {
                 AddStat(writer, wikiPage.stats, "Energy Per Second", powerPlant.EnergyPerSecond);
@@ -55,7 +60,12 @@ namespace Wiki_Writer.Reference_Wiki {
                         AddStat(writer, wikiPage.stats, "Ammo Capacity", reloader.AmmoCapacity);
                         AddStat(writer, wikiPage.stats, "Reload Cooldown", reloader.ReloadCooldown);
                         AddStat(writer, wikiPage.stats, "Reload Duration", reloader.ReloadDuration);
-                        ammo = reloader.Ammunition;
+                        ammo = reloader.Ammunition.ToArray().Cast<AmmoDefinition>().ToArray();
+                    }
+                    if (toolItemDef.TryGetComponent(out WeaponReloaderBattery reloaderBattery)) {
+                        AddStat(writer, wikiPage.stats, "Ammo (Battery) Capacity", reloaderBattery.AmmoCapacity);
+                        AddStat(writer, wikiPage.stats, "Reload Cooldown", reloaderBattery.ReloadCooldown);
+                        AddStat(writer, wikiPage.stats, "Reload Duration", reloaderBattery.ReloadDuration);
                     }
                     if (toolItemDef.TryGetComponent(out WeaponReloaderNoAmmo reloaderNoAmmo)) {
                         AddAmmoStats(writer, wikiPage, reloaderNoAmmo.LoadedAmmo);
@@ -67,12 +77,38 @@ namespace Wiki_Writer.Reference_Wiki {
                     break;
             }
 
+            // Weapon modifiers weapons have.
+            if ((item as ToolItemDefinition)?.TryGetComponent(out WeaponStatsModification statMods) == true) {
+                writer.WriteLine();
+                writer.WriteLine("==== Stats Modifiers ====");
+                AddStat(writer, wikiPage.stats, "Damage Multiplier", statMods.DamageMultiplier);
+                AddStat(writer, wikiPage.stats, "Spread Multiplier", statMods.SpreadMultiplier);
+                AddStat(writer, wikiPage.stats, "Recoil Vertical Multiplier", statMods.RecoilVerticalMultiplier);
+                AddStat(writer, wikiPage.stats, "Recoil Horizontal Multiplier", statMods.RecoilHorizontalMultipler);
+                AddStat(writer, wikiPage.stats, "Recoil First-Shot Multiplier", statMods.RecoilFirstShotMultiplier);
+                AddStat(writer, wikiPage.stats, "Recoil Minimum Burst Length Multiplier", statMods.RecoilMinimumBurstLengthMultiplier);
+                AddStat(writer, wikiPage.stats, "Projectile Count Multiplier", statMods.ProjectileCountMultiplier);
+                AddStat(writer, wikiPage.stats, "Rate of Fire Multiplier", statMods.RateOfFireMultiplier);
+                AddStat(writer, wikiPage.stats, "Effective Range Multiplier", statMods.EffectiveRangeMultiplier);
+                AddStat(writer, wikiPage.stats, "Range Multiplier", statMods.RangeMultiplier);
+                AddStat(writer, wikiPage.stats, "Muzzle Velocity Multiplier", statMods.MuzzleVelocityMultiplier);
+                AddStat(writer, wikiPage.stats, "Gravity Factor Multiplier", statMods.GravityFactorMultiplier);
+                AddStat(writer, wikiPage.stats, "Noise Multiplier", statMods.NoiseMultiplier);
+                AddStat(writer, wikiPage.stats, "Hip-Cone Multiplier", statMods.HipConeMultiplier);
+                AddStat(writer, wikiPage.stats, "Aim-Cone Multiplier", statMods.AimConeMultiplier);
+            }
+
             if (ammo != null && ammo.Length > 0) {
                 writer.WriteLine();
                 writer.WriteLine("==== Ammo Types ====");
+
+                var ammoTypes = new List<string>(ammo.Length);
                 foreach (var ammoDef in ammo) {
                     writer.WriteLine($"  * {ammoDef.CreateWikiLink(false)}");
+                    ammoTypes.Add(ammoDef.GetLocalizedName());
                 }
+
+                wikiPage.stats["Ammo Types"] = string.Join(", ", ammoTypes);
             }
 
             if (item.Prefabs?.Length > 0) {
@@ -84,7 +120,7 @@ namespace Wiki_Writer.Reference_Wiki {
 
         private static void AddAmmoStats(TextWriter writer, WikiPage wikiPage, AmmoStats ammoStats) {
             AddStat(writer, wikiPage.stats, "Damage", ammoStats.Damage);
-            AddStat(writer, wikiPage.stats, "Damage At Range Multiplier", ammoStats.DamageAtRangeMult);
+            AddStat(writer, wikiPage.stats, "Damage at Range Multiplier", ammoStats.DamageAtRangeMult);
             AddStat(writer, null, "Damage Type", ammoStats.DamageType);
             AddStat(writer, wikiPage.stats, "Effective Range", ammoStats.EffectiveRange);
             AddStat(writer, wikiPage.stats, "Gravity Factor", ammoStats.GravityFactor);
@@ -92,7 +128,7 @@ namespace Wiki_Writer.Reference_Wiki {
             AddStat(writer, null, "Noise", ammoStats.Noise);
             AddStat(writer, wikiPage.stats, "Projectile Count", ammoStats.ProjectileCount);
             AddStat(writer, wikiPage.stats, "Range", ammoStats.Range);
-            AddStat(writer, wikiPage.stats, "Rate Of Fire", ammoStats.RateOfFire);
+            AddStat(writer, wikiPage.stats, "Rate of Fire", ammoStats.RateOfFire);
             AddStat(writer, wikiPage.stats, "Spread", ammoStats.RateOfFire);
         }
 
@@ -105,7 +141,7 @@ namespace Wiki_Writer.Reference_Wiki {
             }
         }
 
-        private static void AddStat<T>(TextWriter writer, IDictionary<string, string> statDict, string statName, T stat) {
+        public static void AddStat<T>(TextWriter writer, IDictionary<string, string> statDict, string statName, T stat) {
             var value = stat.ToString();
             writer.WriteLine($"| {statName} | {value} |");
             if (statDict != null) {

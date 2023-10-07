@@ -20,8 +20,8 @@ namespace Wiki_Writer.Reference_Wiki {
                 var isScrap        = false;
 
                 if (recipe.Categories.Any(cat => cat.name.StartsWith("Scrap"))) {
-                    if (scrapRecipes.ContainsKey(localizedName)) {
-                        scrapRecipes[localizedName].Add(recipe);
+                    if (scrapRecipes.TryGetValue(localizedName, out var scrapRecipe)) {
+                        scrapRecipe.Add(recipe);
                     } else {
                         scrapRecipes[localizedName] = new List<Recipe> {recipe};
                     }
@@ -30,6 +30,7 @@ namespace Wiki_Writer.Reference_Wiki {
 
                 using (var writer = new StreamWriter($@"{path}\{recipe.GetSafeName()}.txt", false, Encoding.UTF8)) {
                     var wikiPage = new WikiPage {
+                        guid        = recipe.AssetId.ToString(),
                         name        = localizedName,
                         description = localizedDesc,
                         type        = "recipe",
@@ -109,7 +110,7 @@ namespace Wiki_Writer.Reference_Wiki {
                 var outputItem     = recipes[0].Output.Item;
                 var outputItemPath = outputItem.GetWikiPath();
 
-                using (var writer = new StreamWriter($@"{path}\{metaName.Replace(' ', '_')}.txt", false, Encoding.UTF8)) {
+                using (var writer = new StreamWriter($@"{path}\{metaName.Replace(' ', '_').ToLower()}.txt", false, Encoding.UTF8)) {
                     var wikiPage = new WikiPage {
                         name        = metaName,
                         description = outputItem.GetLocalizedDesc(),

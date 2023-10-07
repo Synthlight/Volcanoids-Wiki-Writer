@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using UnityEngine;
 
 namespace Wiki_Writer {
     [UsedImplicitly]
@@ -27,16 +26,6 @@ namespace Wiki_Writer {
             return dict[key];
         }
 
-        public static bool TryGetComponent<T>(this ItemDefinition item, out T component) {
-            component = default;
-            return item.Prefabs?.Length > 0 && item.Prefabs[0].TryGetComponent<T>(out component);
-        }
-
-        public static bool TryGetComponent<T>(this ToolItemDefinition item, out T component) {
-            component = default;
-            return item.Prefab?.TryGetComponent(out component) == true;
-        }
-
         public static string GetName<T>(this T item) where T : UnityEngine.Object {
             var name             = item.name.Trim();
             if (name == "") name = Plugin.NO_NAME_NAME;
@@ -44,7 +33,7 @@ namespace Wiki_Writer {
         }
 
         public static string GetSafeName<T>(this T item) where T : UnityEngine.Object {
-            return item.GetName().Replace(' ', '_');
+            return item.GetName().Replace(' ', '_').ToLower();
         }
 
         public static string CreateWikiLink<T>(this T item, bool includeNameInParens) where T : ItemDefinition {

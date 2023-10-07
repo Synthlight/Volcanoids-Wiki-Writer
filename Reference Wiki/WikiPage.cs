@@ -6,6 +6,7 @@ namespace Wiki_Writer.Reference_Wiki {
     [SuppressMessage("ReSharper", "NotAccessedField.Global")]
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public class WikiPage {
+        public          string                     guid;
         public          string                     name;
         public          string                     type;
         public          string                     path;

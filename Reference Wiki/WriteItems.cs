@@ -23,76 +23,74 @@ namespace Wiki_Writer.Reference_Wiki {
 
                 WriteTexture(item.Icon, imgPath, item.GetSafeName());
 
-                using (var writer = new StreamWriter($@"{path}\{item.GetSafeName()}.txt", false, Encoding.UTF8)) {
-                    var wikiPage = new WikiPage {
-                        name        = localizedName,
-                        description = localizedDesc,
-                        type        = "item",
-                        path        = item.GetWikiPath(),
-                        imagePath   = $"{item.GetWikiPath()}.png"
-                    };
+                using var writer = new StreamWriter($@"{path}\{item.GetSafeName()}.txt", false, Encoding.UTF8);
+                var wikiPage = new WikiPage {
+                    guid        = item.AssetId.ToString(),
+                    name        = localizedName,
+                    description = localizedDesc,
+                    type        = "item",
+                    path        = item.GetWikiPath(),
+                    imagePath   = $"{item.GetWikiPath()}.png"
+                };
 
-                    Debug.Log($"Writing item: {item.GetName()}");
+                Debug.Log($"Writing item: {item.GetName()}");
 
-                    writer.WriteLine($"{{{{ {item.GetWikiPath()}.png?200}}}}"); // Leave the space, it aligns the image.
-                    writer.WriteLine($"====== {localizedName} ====");
-                    writer.WriteLine($"| Internal name | {item.GetName()} |");
-                    writer.WriteLine($"| AssetId | {item.AssetId} |");
-                    writer.WriteLine($"| Type | {item.GetType()} |");
+                writer.WriteLine($"{{{{ {item.GetWikiPath()}.png?200}}}}"); // Leave the space, it aligns the image.
+                writer.WriteLine($"====== {localizedName} ====");
+                writer.WriteLine($"| Internal name | {item.GetName()} |");
+                writer.WriteLine($"| AssetId | {item.AssetId} |");
+                writer.WriteLine($"| Type | {item.GetType()} |");
 
-                    writer.WriteLine();
-                    writer.WriteLine("==== Description ====");
-                    writer.WriteLine(localizedDesc);
+                writer.WriteLine();
+                writer.WriteLine("==== Description ====");
+                writer.WriteLine(localizedDesc);
 
-                    WriteStats.Write(writer, item, wikiPage);
+                WriteStats.Write(writer, item, wikiPage);
 
-                    writer.WriteLine();
-                    writer.WriteLine("==== Recipes Outputting This Item ====");
+                writer.WriteLine();
+                writer.WriteLine("==== Recipes Outputting This Item ====");
 
-                    foreach (var recipe in RuntimeAssetDatabase.Get<Recipe>().Where(recipe => recipe.Output.Item.name == item.name)) {
-                        writer.WriteLine($"  * {recipe.CreateWikiLink(true)}");
-                    }
-
-                    writer.WriteLine();
-                    writer.WriteLine("==== Recipes Using This Item As Input ====");
-
-                    foreach (var recipe in from recipe in RuntimeAssetDatabase.Get<Recipe>()
-                                           from input in recipe.Inputs
-                                           where input.Item.name == item.name
-                                           select recipe) {
-                        writer.WriteLine($"  * {recipe.CreateWikiLink(true)}");
-                    }
-
-                    writer.WriteLine();
-                    writer.WriteLine("==== Recipes Requiring This Item ====");
-
-                    foreach (var recipe in from recipe in RuntimeAssetDatabase.Get<Recipe>()
-                                           from requirement in recipe.RequiredUpgrades
-                                           where requirement.name == item.name
-                                           select recipe) {
-                        writer.WriteLine($"  * {recipe.CreateWikiLink(true)}");
-                    }
-
-                    writer.WriteLine();
-                    writer.Write(Plugin.GetFooter());
-
-                    pages.Add($"  * {item.CreateWikiLink(false)}");
-                    wikiPages.Add(wikiPage);
+                foreach (var recipe in RuntimeAssetDatabase.Get<Recipe>().Where(recipe => recipe.Output.Item.name == item.name)) {
+                    writer.WriteLine($"  * {recipe.CreateWikiLink(true)}");
                 }
+
+                writer.WriteLine();
+                writer.WriteLine("==== Recipes Using This Item As Input ====");
+
+                foreach (var recipe in from recipe in RuntimeAssetDatabase.Get<Recipe>()
+                                       from input in recipe.Inputs
+                                       where input.Item.name == item.name
+                                       select recipe) {
+                    writer.WriteLine($"  * {recipe.CreateWikiLink(true)}");
+                }
+
+                writer.WriteLine();
+                writer.WriteLine("==== Recipes Requiring This Item ====");
+
+                foreach (var recipe in from recipe in RuntimeAssetDatabase.Get<Recipe>()
+                                       from requirement in recipe.RequiredUpgrades
+                                       where requirement.name == item.name
+                                       select recipe) {
+                    writer.WriteLine($"  * {recipe.CreateWikiLink(true)}");
+                }
+
+                writer.WriteLine();
+                writer.Write(Plugin.GetFooter());
+
+                pages.Add($"  * {item.CreateWikiLink(false)}");
+                wikiPages.Add(wikiPage);
             }
 
             return pages;
         }
 
-        private static void WriteTexture(Sprite sprite, string path, string itemSafeName) {
-            var tex = sprite.texture;
-            if (!tex.isReadable) {
-                var target = new RenderTexture(tex.width, tex.height, 0, RenderTextureFormat.ARGB32);
-                Graphics.Blit(tex, target);
-                var copy = new Texture2D(target.width, target.height, target.graphicsFormat, target.mipmapCount, 0);
-                copy.ReadPixels(target);
-                tex = copy;
-            }
+        public static void WriteTexture(Sprite sprite, string path, string itemSafeName) {
+            var tex    = sprite.texture;
+            var target = new RenderTexture(tex.width, tex.height, 0, RenderTextureFormat.ARGB32);
+            Graphics.Blit(tex, target);
+            var copy = new Texture2D(target.width, target.height, target.graphicsFormat, target.mipmapCount, 0);
+            copy.ReadPixels(target);
+            tex = copy;
             File.WriteAllBytes($@"{path}\{itemSafeName}.png", tex.EncodeToPNG());
         }
     }
