@@ -28,78 +28,78 @@ namespace Wiki_Writer.Reference_Wiki {
                     isScrap = true;
                 }
 
-                using (var writer = new StreamWriter($@"{path}\{recipe.GetSafeName()}.txt", false, Encoding.UTF8)) {
-                    var wikiPage = new WikiPage {
-                        guid        = recipe.AssetId.ToString(),
-                        name        = localizedName,
-                        description = localizedDesc,
-                        type        = "recipe",
-                        path        = recipe.GetWikiPath(),
-                        imagePath   = $"{outputItemPath}.png"
-                    };
+                using var writer = new StreamWriter($@"{path}\{recipe.GetSafeName()}.txt", false, Encoding.UTF8);
 
-                    if (recipeName.Contains("Worktable") && recipeName != "WorktableRecipe") {
-                        if (recipeName.Contains("5x")) {
-                            wikiPage.name += " (Worktable, x5)";
-                        } else {
-                            wikiPage.name += " (Worktable)";
-                        }
+                var wikiPage = new WikiPage {
+                    guid        = recipe.AssetId.ToString(),
+                    name        = localizedName,
+                    description = localizedDesc,
+                    type        = "recipe",
+                    path        = recipe.GetWikiPath(),
+                    imagePath   = $"{outputItemPath}.png"
+                };
+
+                if (recipeName.Contains("Worktable") && recipeName != "WorktableRecipe") {
+                    if (recipeName.Contains("5x")) {
+                        wikiPage.name += " (Worktable, x5)";
+                    } else {
+                        wikiPage.name += " (Worktable)";
                     }
+                }
 
-                    writer.WriteLine($"{{{{ {outputItemPath}.png?200}}}}");
-                    writer.WriteLine($"====== {localizedName} Recipe ====");
-                    writer.WriteLine($"| Internal name | {recipeName} |");
-                    writer.WriteLine($"| AssetId | {recipe.AssetId} |");
-                    writer.WriteLine($"| Output | {recipe.Output.Item.CreateWikiLink(false)} |");
+                writer.WriteLine($"{{{{ {outputItemPath}.png?200}}}}");
+                writer.WriteLine($"====== {localizedName} Recipe ====");
+                writer.WriteLine($"| Internal name | {recipeName} |");
+                writer.WriteLine($"| AssetId | {recipe.AssetId} |");
+                writer.WriteLine($"| Output | {recipe.Output.Item.CreateWikiLink(false)} |");
 
-                    writer.WriteLine();
-                    writer.WriteLine("==== Description ====");
-                    writer.WriteLine(localizedDesc);
+                writer.WriteLine();
+                writer.WriteLine("==== Description ====");
+                writer.WriteLine(localizedDesc);
 
-                    writer.WriteLine();
-                    writer.WriteLine("==== Required Schematics ====");
+                writer.WriteLine();
+                writer.WriteLine("==== Required Schematics ====");
 
-                    foreach (var requirement in recipe.RequiredUpgrades) {
-                        writer.WriteLine($"  * {requirement.CreateWikiLink(false)}");
-                        wikiPage.requiredUpgrades.Add(requirement.GetLocalizedName());
+                foreach (var requirement in recipe.RequiredUpgrades) {
+                    writer.WriteLine($"  * {requirement.CreateWikiLink(false)}");
+                    wikiPage.requiredUpgrades.Add(requirement.GetLocalizedName());
+                }
+
+                writer.WriteLine();
+                writer.WriteLine("==== Required Items [Quantity] ====");
+
+                foreach (var input in recipe.Inputs) {
+                    writer.WriteLine($"  * {input.Item.CreateWikiLink(false)} [{input.Amount}]");
+                    wikiPage.requiredItems.Add(input.Item.GetLocalizedName());
+                }
+
+                writer.WriteLine();
+                writer.WriteLine("==== Can Be Crafted In ====");
+
+                foreach (var category in recipe.Categories) {
+                    var categoryName = category.name;
+                    if (!crafters.ContainsKey(categoryName)) continue;
+                    foreach (var item in crafters[categoryName]) {
+                        writer.WriteLine($"  * {item.CreateWikiLink(false)}");
+                        wikiPage.craftedIn.Add(item.GetLocalizedName());
                     }
+                }
 
-                    writer.WriteLine();
-                    writer.WriteLine("==== Required Items [Quantity] ====");
+                writer.WriteLine();
+                writer.WriteLine("==== Crafting Categories ====");
 
-                    foreach (var input in recipe.Inputs) {
-                        writer.WriteLine($"  * {input.Item.CreateWikiLink(false)} [{input.Amount}]");
-                        wikiPage.requiredItems.Add(input.Item.GetLocalizedName());
-                    }
+                foreach (var category in recipe.Categories) {
+                    writer.WriteLine($"  * {category.GetName()}");
+                }
 
-                    writer.WriteLine();
-                    writer.WriteLine("==== Can Be Crafted In ====");
+                writer.WriteLine();
+                writer.Write(Plugin.GetFooter());
 
-                    foreach (var category in recipe.Categories) {
-                        var categoryName = category.name;
-                        if (!crafters.ContainsKey(categoryName)) continue;
-                        foreach (var item in crafters[categoryName]) {
-                            writer.WriteLine($"  * {item.CreateWikiLink(false)}");
-                            wikiPage.craftedIn.Add(item.GetLocalizedName());
-                        }
-                    }
+                pages.Add($"  * {recipe.CreateWikiLink(true)}");
 
-                    writer.WriteLine();
-                    writer.WriteLine("==== Crafting Categories ====");
-
-                    foreach (var category in recipe.Categories) {
-                        writer.WriteLine($"  * {category.GetName()}");
-                    }
-
-                    writer.WriteLine();
-                    writer.Write(Plugin.GetFooter());
-
-                    pages.Add($"  * {recipe.CreateWikiLink(true)}");
-
-                    // Don't track individual scrap recipes in the json.
-                    if (!isScrap) {
-                        wikiPages.Add(wikiPage);
-                    }
+                // Don't track individual scrap recipes in the json.
+                if (!isScrap) {
+                    wikiPages.Add(wikiPage);
                 }
             }
 
@@ -110,31 +110,31 @@ namespace Wiki_Writer.Reference_Wiki {
                 var outputItem     = recipes[0].Output.Item;
                 var outputItemPath = outputItem.GetWikiPath();
 
-                using (var writer = new StreamWriter($@"{path}\{metaName.Replace(' ', '_').ToLower()}.txt", false, Encoding.UTF8)) {
-                    var wikiPage = new WikiPage {
-                        name        = metaName,
-                        description = outputItem.GetLocalizedDesc(),
-                        type        = "recipe",
-                        path        = recipes[0].GetWikiPath(),
-                        imagePath   = $"{outputItemPath}.png"
-                    };
+                using var writer = new StreamWriter($@"{path}\{metaName.Replace(' ', '_').ToLower()}.txt", false, Encoding.UTF8);
 
-                    writer.WriteLine($"{{{{ {outputItemPath}.png?200}}}}");
-                    writer.WriteLine($"====== {metaName} ====");
-                    writer.WriteLine($"This is an meta page to link to all the scrap recipes for {localizedName}.\\\\");
-                    writer.WriteLine("See the individual recipes for AssetIds and such.\\\\");
-                    writer.WriteLine($"Output: {outputItem.CreateWikiLink(false)}");
-                    writer.WriteLine();
+                var wikiPage = new WikiPage {
+                    name        = metaName,
+                    description = outputItem.GetLocalizedDesc(),
+                    type        = "recipe",
+                    path        = recipes[0].GetWikiPath(),
+                    imagePath   = $"{outputItemPath}.png"
+                };
 
-                    foreach (var recipe in recipes) {
-                        writer.WriteLine($"  * {recipe.CreateWikiLink(true)}");
-                    }
+                writer.WriteLine($"{{{{ {outputItemPath}.png?200}}}}");
+                writer.WriteLine($"====== {metaName} ====");
+                writer.WriteLine($@"This is an meta page to link to all the scrap recipes for {localizedName}.\\");
+                writer.WriteLine(@"See the individual recipes for AssetIds and such.\\");
+                writer.WriteLine($"Output: {outputItem.CreateWikiLink(false)}");
+                writer.WriteLine();
 
-                    writer.WriteLine();
-                    writer.Write(Plugin.GetFooter());
-
-                    wikiPages.Add(wikiPage);
+                foreach (var recipe in recipes) {
+                    writer.WriteLine($"  * {recipe.CreateWikiLink(true)}");
                 }
+
+                writer.WriteLine();
+                writer.Write(Plugin.GetFooter());
+
+                wikiPages.Add(wikiPage);
             }
 
             return pages;

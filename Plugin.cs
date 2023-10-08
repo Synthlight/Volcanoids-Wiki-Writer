@@ -9,6 +9,7 @@ namespace Wiki_Writer {
         public const string NO_NAME_NAME               = "{no name}";
         public const string BASE_OUTPUT_PATH           = @"R:\Games\Volcanoids\Mods\_Wiki\";
         public const string REFERENCE_WIKI_OUTPUT_PATH = BASE_OUTPUT_PATH + @"_ReferenceWiki\";
+        public const string FANDOM_WIKI_OUTPUT_PATH    = BASE_OUTPUT_PATH + @"_FandomWiki\";
         public const string ITEMS_NAMESPACE            = "items";
         public const string RECIPES_NAMESPACE          = "recipes";
 
