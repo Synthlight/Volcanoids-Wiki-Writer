@@ -127,6 +127,7 @@ namespace Wiki_Writer.Fandom_Wiki {
                     foreach (var category in recipe.Categories) {
                         var match = RECIPE_CATEGORY_REGEX.Match(category.GetName());
                         if (match.Success) {
+                            if (match.Groups[2].Value == "0") continue;
                             var moduleName = match.Groups[1].Value.Replace("Refinement", "Refinery");
                             properties["production_req"] = $"{moduleName} Module Tier {match.Groups[2].Value}";
                         }
