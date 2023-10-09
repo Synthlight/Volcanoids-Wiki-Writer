@@ -35,6 +35,19 @@ namespace Wiki_Writer.Reference_Wiki {
                 AddStat(writer, wikiPage.stats, "Core Slot Cost", packableModule.CoreSlotCount);
             }
 
+            if (item.TryGetComponent(out PackableModuleHealth packableModuleHealth)) {
+                AddStat(writer, wikiPage.stats, "Module Health", packableModuleHealth.MaxHP);
+                AddStat(writer, wikiPage.stats, "Closed Armor", $"{packableModuleHealth.Armor * 100}%");
+            }
+
+            if (item.TryGetComponent(out DrillshipObjectHealth drillshipObjectHealth)) {
+                AddStat(writer, wikiPage.stats, "Object Health", drillshipObjectHealth.MaxHP);
+            }
+
+            if (item.TryGetComponent(out GridModule gridModule)) {
+                AddStat(writer, wikiPage.stats, "Size", gridModule.ModuleCount);
+            }
+
             if (item.TryGetComponent(out ProductionModule prodModule)) {
                 AddStat(writer, wikiPage.stats, $"{prodModule.FactoryType.name} Points", prodModule.Points);
             }
@@ -133,11 +146,15 @@ namespace Wiki_Writer.Reference_Wiki {
         }
 
         private static void AddStatsFromPropertySet(TextWriter writer, IDictionary<string, string> statDict, PropertySet properties) {
-            foreach (var stat in properties.Items) {
-                var statName  = stat.Property.Name;
-                var statValue = stat.GetStatValue().ToString();
-                if (statName == "Energy" && float.TryParse(statValue, out var v) && v == 0) continue;
-                AddStat(writer, statDict, statName, statValue);
+            try {
+                foreach (var stat in properties.Items) {
+                    var statName  = stat.Property.Name;
+                    var statValue = stat.GetStatValue().ToString();
+                    if (statName == "Energy" && float.TryParse(statValue, out var v) && v == 0) continue;
+                    AddStat(writer, statDict, statName, statValue);
+                }
+            } catch (Exception) {
+                Debug.LogError("Error parsing stats for item, skipping stats.");
             }
         }
 
