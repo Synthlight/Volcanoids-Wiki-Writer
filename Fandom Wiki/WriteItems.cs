@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using Base_Mod;
@@ -10,9 +11,12 @@ using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Wiki_Writer.Fandom_Wiki {
-    public static class WriteAll {
+    public static class WriteItems {
         private static readonly Regex RECIPE_CATEGORY_REGEX = new("(Production|Refinement|Research|Scrap)Tier(\\d)");
         private static readonly GUID  COPPER_LEVERS         = GUID.Parse("3b42ca843c8036b4087c1584eee1e406");
+
+        [DllImport("kernel32.dll", EntryPoint = "CreateSymbolicLinkW", CharSet = CharSet.Unicode)]
+        public static extern int CreateSymbolicLink(string lpSymlinkFileName, string lpTargetFileName, int dwFlags);
 
         [OnIslandSceneLoaded]
         [UsedImplicitly]
@@ -66,6 +70,13 @@ namespace Wiki_Writer.Fandom_Wiki {
                         properties["reload_duration"] = reloader.ReloadDuration;
 
                         ammo = reloader.Ammunition.ToArray().Cast<AmmoDefinition>().ToArray();
+                    }
+                    if (toolItemDef.TryGetComponent(out WeaponReloaderNoAmmo reloaderNoAmmo)) {
+                        var meleeAmmoStats = reloaderNoAmmo.Ammunition.ToArray().Cast<AmmoDefinition>().ToArray().FirstOrDefault()?.AmmoStats;
+                        if (meleeAmmoStats != null) {
+                            properties["damage"] = meleeAmmoStats.Value.Damage;
+                            properties["range"]  = meleeAmmoStats.Value.Range;
+                        }
                     }
 
                     if (toolItemDef.TryGetComponent(out WeaponReloaderBattery reloaderBattery)) {
@@ -167,12 +178,22 @@ namespace Wiki_Writer.Fandom_Wiki {
                 WriteModifiedAmmoStatTable(writer, ammo, statMods);
 
                 WriteStatModifierTable(writer, statMods);
+
+                writer.Close();
+
+                if (categories.Any()) {
+                    foreach (var category in categories) {
+                        var catDir = $@"{path}\Categorized\{category}";
+                        Directory.CreateDirectory(catDir);
+                        CreateSymbolicLink($@"{catDir}\{item.GetSafeName()}.txt", $@"..\..\{item.GetSafeName()}.txt", 0);
+                    }
+                }
             }
         }
 
         private static List<string> GetCategories(ItemDefinition item) {
             var categories = new List<string>();
-            var itemName   = item.GetName();
+            var itemName   = item.GetLocalizedName();
 
             // Ammo
             if (item is AmmoDefinition)

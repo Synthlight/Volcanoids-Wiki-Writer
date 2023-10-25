@@ -10,6 +10,10 @@ namespace Wiki_Writer {
             return RuntimeAssetDatabase.Get<ItemDefinition>().First(def => def.AssetId == item.AssetId).NameLocalization.Text.Trim();
         }
 
+        public static string GetLocalizedName(this LandingSite item) {
+            return item.NameLocalization.Text.Trim();
+        }
+
         public static string GetLocalizedDesc(this ItemDefinition item) {
             return RuntimeAssetDatabase.Get<ItemDefinition>().First(def => def.AssetId == item.AssetId).DescriptionLocalization.Text.Trim();
         }
@@ -34,6 +38,10 @@ namespace Wiki_Writer {
 
         public static string GetSafeName<T>(this T item) where T : UnityEngine.Object {
             return item.GetName().Replace(' ', '_').ToLower();
+        }
+
+        public static string GetSafeName(this string item) {
+            return item.Replace(' ', '_').ToLower();
         }
 
         public static string CreateWikiLink<T>(this T item, bool includeNameInParens) where T : ItemDefinition {

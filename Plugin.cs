@@ -11,6 +11,7 @@ namespace Wiki_Writer {
         public const string REFERENCE_WIKI_OUTPUT_PATH = BASE_OUTPUT_PATH + @"_ReferenceWiki\";
         public const string FANDOM_WIKI_OUTPUT_PATH    = BASE_OUTPUT_PATH + @"_FandomWiki\";
         public const string ITEMS_NAMESPACE            = "items";
+        public const string MAPS_NAMESPACE             = "maps";
         public const string RECIPES_NAMESPACE          = "recipes";
 
         public static string GetHeader() {
