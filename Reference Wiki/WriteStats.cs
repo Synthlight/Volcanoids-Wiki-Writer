@@ -88,6 +88,13 @@ namespace Wiki_Writer.Reference_Wiki {
                                       select component.GetType().ToString()).Distinct();
                     Debug.Log("---- Components: " + string.Join(", ", components));
                     break;
+                case TrainCoreItemDefinition coreItem:
+                    foreach (var pointInfo in coreItem.Points) {
+                        var name   = pointInfo.FactoryType.GetName();
+                        var points = pointInfo.ProductionPoints;
+                        AddStat(writer, wikiPage.stats, $"{name} Points", points);
+                    }
+                    break;
             }
 
             // Weapon modifiers weapons have.
