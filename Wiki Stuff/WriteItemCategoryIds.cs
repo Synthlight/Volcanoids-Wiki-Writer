@@ -4,24 +4,24 @@ using System.Text;
 using Base_Mod.Models;
 using JetBrains.Annotations;
 
-namespace Wiki_Writer.Wiki_Stuff {
-    public static class WriteItemCategoryIds {
-        [OnIslandSceneLoaded]
-        [UsedImplicitly]
-        public static void Go() {
-            var msg = new StringBuilder(Plugin.GetHeader())
-                      .AppendLine("Name | AssetId (GUID)")
-                      .AppendLine("--- | ---");
+namespace Wiki_Writer.Wiki_Stuff;
 
-            var categoryList = from category in RuntimeAssetDatabase.Get<ItemCategory>()
-                               orderby category.name
-                               select category;
+public static class WriteItemCategoryIds {
+    [OnIslandSceneLoaded]
+    [UsedImplicitly]
+    public static void Go() {
+        var msg = new StringBuilder(Plugin.GetHeader())
+                  .AppendLine("Name | AssetId (GUID)")
+                  .AppendLine("--- | ---");
 
-            foreach (var category in categoryList) {
-                msg.AppendLine($"{category.GetName()} | {category.AssetId}");
-            }
+        var categoryList = from category in RuntimeAssetDatabase.Get<ItemCategory>()
+                           orderby category.name
+                           select category;
 
-            File.WriteAllText(Plugin.BASE_OUTPUT_PATH + "Item Category Ids.txt", msg.ToString());
+        foreach (var category in categoryList) {
+            msg.AppendLine($"{category.GetName()} | {category.AssetId}");
         }
+
+        File.WriteAllText(Plugin.BASE_OUTPUT_PATH + "Item Category Ids.txt", msg.ToString());
     }
 }

@@ -10,6 +10,7 @@
 		<Company>None</Company>
 		<RootNamespace>Wiki_Writer</RootNamespace>
 		<DebugType>full</DebugType>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<MSBuildWarningsAsMessages>MSB3277</MSBuildWarningsAsMessages>
 		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
