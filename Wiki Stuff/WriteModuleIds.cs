@@ -13,7 +13,7 @@ public static class WriteModuleIds {
                   "Name | AssetId (GUID)\r\n" +
                   "--- | ---\r\n";
         // ReSharper disable once LoopCanBeConvertedToQuery
-        foreach (var module in RuntimeAssetDatabase.Get<ModuleItemDefinition>().OrderBy(i => i.name)) {
+        foreach (var module in RuntimeAssetDatabase.Get<ItemDefinition>().OrderBy(i => i.name)) {
             msg += $"{module.GetName()} | {module.AssetId}\r\n";
         }
 

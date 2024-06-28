@@ -13,7 +13,6 @@ public static class WriteStaticFieldLists {
                   "Table of Contents\r\n" +
                   "---\r\n\r\n" +
                   "- [Item Id Fields](#Item-Id-Fields)\r\n" +
-                  "- [Module Id Fields](#Module-Id-Fields)\r\n" +
                   "- [Recipe Id Fields](#Recipe-Id-Fields)\r\n" +
                   "\r\n";
 
@@ -25,17 +24,6 @@ public static class WriteStaticFieldLists {
             if (itemName == "") itemName = Plugin.NO_NAME_NAME;
 
             msg += MakeFieldForNameAndId(itemName, item.AssetId) + "\r\n";
-        }
-        msg += "```\r\n";
-
-        msg += "Module Id Fields:\r\n" +
-               "---\r\n\r\n" +
-               "```\r\n";
-        foreach (var module in RuntimeAssetDatabase.Get<ModuleItemDefinition>().OrderBy(i => i.name)) {
-            var moduleName                   = module.name.Trim();
-            if (moduleName == "") moduleName = Plugin.NO_NAME_NAME;
-
-            msg += MakeFieldForNameAndId(moduleName, module.AssetId) + "\r\n";
         }
         msg += "```\r\n";
 
