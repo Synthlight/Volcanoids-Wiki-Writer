@@ -44,6 +44,21 @@ public static class WriteItems {
         const string path = Plugin.FANDOM_WIKI_OUTPUT_PATH + Plugin.ITEMS_NAMESPACE;
         Reference_Wiki.WriteAll.EraseAndCreateDir(path);
 
+        // Build a list of what items need to be unlocked.
+        var unlockGroupByRecipe = new Dictionary<Recipe, List<ItemDefinition>>();
+        foreach (var unlockGroup in RuntimeAssetDatabase.Get<RecipeUnlockGroup>()) {
+            foreach (var recipe in unlockGroup.Recipes) {
+                if (!unlockGroupByRecipe.ContainsKey(recipe)) unlockGroupByRecipe[recipe] = [];
+
+                var itemList = unlockGroupByRecipe[recipe];
+
+                foreach (var item in unlockGroup.Items) {
+                    if (itemList.Contains(item)) continue;
+                    itemList.Add(item);
+                }
+            }
+        }
+
         foreach (var item in RuntimeAssetDatabase.Get<ItemDefinition>()) {
             var localizedName = item.GetLocalizedName();
             var localizedDesc = item.GetLocalizedDesc();
@@ -156,12 +171,24 @@ public static class WriteItems {
                 Debug.LogError("Error parsing stats for item, skipping stats.");
             }
 
-            FillRecipeProperties(crafters, item, properties);
+            FillRecipeProperties(crafters, item, properties, unlockGroupByRecipe, out var craftedWith);
 
             var categories = GetCategories(item);
             if (categories.Any()) {
                 foreach (var category in categories) {
                     writer.WriteLine($"[[Category:{category}]]");
+                }
+
+                for (var i = 0; i < 1; i++) {
+                    writer.WriteLine();
+                }
+            }
+
+            if (craftedWith.Any()) {
+                writer.WriteLine("<!-- Crafted with categories (none if next line is blank): -->");
+
+                foreach (var category in craftedWith) {
+                    writer.WriteLine($"[[Category:Crafted with {category}]]");
                 }
 
                 for (var i = 0; i < 1; i++) {
@@ -390,10 +417,11 @@ public static class WriteItems {
         }
     }
 
-    private static void FillRecipeProperties(IReadOnlyDictionary<string, List<ItemDefinition>> crafters, Definition item, IDictionary<string, object> properties) {
+    private static void FillRecipeProperties(IReadOnlyDictionary<string, List<ItemDefinition>> crafters, Definition item, IDictionary<string, object> properties, Dictionary<Recipe, List<ItemDefinition>> unlockGroupByRecipe, out List<string> craftedWith) {
         var recipe = RuntimeAssetDatabase.Get<Recipe>()
                                          .Where(recipe => recipe.Output.Item.AssetId == item.AssetId)
                                          .FirstOrDefault(recipe => !recipe.GetName().Contains("Worktable"));
+        craftedWith = [];
 
         if (recipe != null) {
             var requirements = "";
@@ -401,15 +429,27 @@ public static class WriteItems {
 
             foreach (var category in recipe.Categories) {
                 var categoryName = category.name;
-                if (!crafters.ContainsKey(categoryName)) continue;
-                foreach (var crafter in crafters[categoryName]) {
-                    if (i > 0) requirements += "<br>";
-                    requirements += $"[[{crafter.GetLocalizedName()}]]";
-                    i++;
+                if (crafters.TryGetValue(categoryName, out var craftersInCategory)) {
+                    foreach (var crafter in craftersInCategory) {
+                        if (i > 0) requirements += "<br>";
+                        requirements += $"[[{crafter.GetLocalizedName()}]]";
+                        i++;
+                    }
                 }
             }
 
             properties["craftedIn"] = requirements;
+
+            var requiredItems = "";
+            if (unlockGroupByRecipe.TryGetValue(recipe, out var unlockItems)) {
+                foreach (var unlockItem in unlockItems) {
+                    if (requiredItems != "") requiredItems += "<br>";
+                    requiredItems += $"[[{unlockItem.GetLocalizedName()}]]";
+                }
+            }
+            if (requiredItems != "") {
+                properties["item_req"] = requiredItems;
+            }
 
             if (recipe.RequiredUpgrades.Any()) {
                 var schematics = "";
@@ -435,9 +475,12 @@ public static class WriteItems {
 
             i = 1;
             foreach (var input in recipe.Inputs) {
-                properties[$"ingredient{i}"] = input.Item.GetLocalizedName();
+                var inputItemName = input.Item.GetLocalizedName();
+                properties[$"ingredient{i}"] = inputItemName;
                 properties[$"quantity{i}"]   = input.Amount;
                 i++;
+
+                craftedWith.Add(inputItemName);
             }
         }
     }

@@ -13,6 +13,21 @@ public static class WriteRecipes {
         var scrapRecipes = new Dictionary<string, List<Recipe>>();
         var pages        = new List<string>();
 
+        // Build a list of what items need to be unlocked.
+        var unlockGroupByRecipe = new Dictionary<Recipe, List<ItemDefinition>>();
+        foreach (var unlockGroup in RuntimeAssetDatabase.Get<RecipeUnlockGroup>()) {
+            foreach (var recipe in unlockGroup.Recipes) {
+                if (!unlockGroupByRecipe.ContainsKey(recipe)) unlockGroupByRecipe[recipe] = [];
+
+                var itemList = unlockGroupByRecipe[recipe];
+
+                foreach (var item in unlockGroup.Items) {
+                    if (itemList.Contains(item)) continue;
+                    itemList.Add(item);
+                }
+            }
+        }
+
         foreach (var recipe in RuntimeAssetDatabase.Get<Recipe>()) {
             var recipeName     = recipe.GetName();
             var localizedName  = recipe.Output.Item.GetLocalizedName();
@@ -57,6 +72,18 @@ public static class WriteRecipes {
             writer.WriteLine();
             writer.WriteLine("==== Description ====");
             writer.WriteLine(localizedDesc);
+
+            writer.WriteLine();
+            writer.WriteLine("==== Items That Need to Be Found to Unlock ====");
+            writer.WriteLine(@"Finding any listed item triggers the unlock.\\");
+            writer.WriteLine("Some of these might be schematics you can research instead.");
+
+            if (unlockGroupByRecipe.TryGetValue(recipe, out var unlockItems)) {
+                foreach (var item in unlockItems) {
+                    writer.WriteLine($"  * {item.CreateWikiLink(false)}");
+                    wikiPage.requiredUnlockItems.Add(item.GetLocalizedName());
+                }
+            }
 
             writer.WriteLine();
             writer.WriteLine("==== Required Schematics ====");

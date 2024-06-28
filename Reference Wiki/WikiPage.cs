@@ -13,8 +13,9 @@ public class WikiPage {
     public          string                     path;
     public          string                     imagePath;
     public          string                     description;
-    public readonly List<string>               requiredUpgrades = [];
-    public readonly List<string>               requiredItems    = [];
-    public readonly List<string>               craftedIn        = [];
-    public readonly Dictionary<string, string> stats            = [];
+    public readonly List<string>               requiredUnlockItems = [];
+    public readonly List<string>               requiredUpgrades    = [];
+    public readonly List<string>               requiredItems       = [];
+    public readonly List<string>               craftedIn           = [];
+    public readonly Dictionary<string, string> stats               = [];
 }
