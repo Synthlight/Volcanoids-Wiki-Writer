@@ -64,22 +64,31 @@ public static class WriteAll {
         using var writer = new StreamWriter($@"{Plugin.REFERENCE_WIKI_OUTPUT_PATH}\dps_calculations.txt", false, Encoding.UTF8);
         writer.WriteLine("====== DPS Calculations ====");
         writer.WriteLine();
-        writer.WriteLine("This does not take range, reloading, spread or anything else into account. Just RoF (Rate-of-Fire) and damage.");
+        writer.WriteLine(@"This does not take range, spread or other RNG into account.\\");
+        writer.WriteLine(@"Damage and RoF here are pre-calculated from ammo damage * weapon damage multiplier. This is to save column space.\\");
+        writer.WriteLine("(Weapons have damage and RoF multipliers, and the ammo has the base damage / RoF values.)");
         writer.WriteLine();
-        writer.WriteLine("| Weapon | Ammo | Damage | Damage Multiplier | RoF | RoF Multiplier | DPS |");
+        writer.WriteLine("Formula used: (trueDamage * trueRateOfFire) * (firingTime / (firingTime + reloadDuration))");
+        writer.WriteLine();
+        writer.WriteLine("| Weapon | Ammo | Damage | RoF | Reload Speed | Capacity | DPS |");
 
         foreach (var weapon in RuntimeAssetDatabase.Get<ToolItemDefinition>()) {
             if (!weapon.TryGetComponent(out WeaponReloaderAmmo reloader)) continue;
             weapon.TryGetComponent(out WeaponStatsModification statMods);
+            var reloadDuration = reloader.ReloadCooldown + reloader.ReloadDuration;
+            var ammoCapacity   = reloader.AmmoCapacity;
 
             foreach (var ammo in reloader.Ammunition.ToArray().Cast<AmmoDefinition>()) {
                 var ammoStats            = ammo.AmmoStats;
                 var damage               = ammoStats.Damage;
                 var damageMultiplier     = statMods == null ? 1 : statMods.DamageMultiplier;
+                var trueDamage           = damage * damageMultiplier;
                 var rateOfFire           = ammoStats.RateOfFire;
                 var rateOfFireMultiplier = statMods == null ? 1 : statMods.RateOfFireMultiplier;
-                var dps                  = (damage * damageMultiplier) * (rateOfFire * rateOfFireMultiplier);
-                writer.WriteLine($"| {weapon.CreateWikiLink(false)} | {ammo.CreateWikiLink(false)} | {damage} | {damageMultiplier} | {rateOfFire} | {rateOfFireMultiplier} | {dps} |");
+                var trueRateOfFire       = rateOfFire * rateOfFireMultiplier;
+                var firingTime           = ammoCapacity / trueRateOfFire;
+                var dps                  = (trueDamage * trueRateOfFire) * (firingTime / (firingTime + reloadDuration));
+                writer.WriteLine($"| {weapon.CreateWikiLink(false)} | {ammo.CreateWikiLink(false)} | {trueDamage} | {trueRateOfFire} | {reloadDuration} | {ammoCapacity} | {dps} |");
             }
         }
 
