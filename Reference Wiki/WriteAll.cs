@@ -65,7 +65,7 @@ public static class WriteAll {
         writer.WriteLine("====== DPS Calculations ====");
         writer.WriteLine();
         writer.WriteLine(@"This does not take range, spread or other RNG into account.\\");
-        writer.WriteLine(@"Damage and RoF here are pre-calculated from ammo damage * weapon damage multiplier. This is to save column space.\\");
+        writer.WriteLine(@"Damage and RoF here are pre-calculated from ammo damage * weapon damage multiplier * projectile count. This is to save column space.\\");
         writer.WriteLine("(Weapons have damage and RoF multipliers, and the ammo has the base damage / RoF values.)");
         writer.WriteLine();
         writer.WriteLine("Formula used: (trueDamage * trueRateOfFire) * (firingTime / (firingTime + reloadDuration))");
@@ -80,9 +80,10 @@ public static class WriteAll {
 
             foreach (var ammo in reloader.Ammunition.ToArray().Cast<AmmoDefinition>()) {
                 var ammoStats            = ammo.AmmoStats;
+                var projectileCount      = ammoStats.ProjectileCount;
                 var damage               = ammoStats.Damage;
                 var damageMultiplier     = statMods == null ? 1 : statMods.DamageMultiplier;
-                var trueDamage           = damage * damageMultiplier;
+                var trueDamage           = damage * damageMultiplier * projectileCount;
                 var rateOfFire           = ammoStats.RateOfFire;
                 var rateOfFireMultiplier = statMods == null ? 1 : statMods.RateOfFireMultiplier;
                 var trueRateOfFire       = rateOfFire * rateOfFireMultiplier;
