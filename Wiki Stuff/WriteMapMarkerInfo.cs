@@ -51,16 +51,31 @@ public static class WriteMapMarkerInfo {
             isLandingSite = true
         }));
 
+        var songs = Resources.FindObjectsOfTypeAll<PhonographCylinder>();
+        Debug.Log($"Songs count (Resources.FindObjectsOfTypeAll<PhonographCylinder>()): {songs.Length}");
+
+        list.AddRange(songs.Select(song => new MarkerInfo {
+            position         = new(song.gameObject.transform.position.x, 0, song.gameObject.transform.position.y),
+            tooltip          = song.GetName(),
+            level            = song.gameObject.layer,
+            icon             = "Phonograph_Icon",
+            isPhonographSong = true,
+            surface          = true
+        }));
+
+        var basePath = $"{Plugin.BASE_OUTPUT_PATH}Map Markers";
+        if (!Directory.Exists(basePath)) Directory.CreateDirectory(basePath);
+
         foreach (var icon in icons) {
             try {
-                WriteItems.WriteTexture(icon, $"{Plugin.BASE_OUTPUT_PATH}Map Markers", icon.name);
+                WriteItems.WriteTexture(icon, basePath, icon.name);
             } catch (Exception e) {
                 Debug.LogError($"Error saving {icon.name} texture: " + e.Message);
             }
         }
 
         var json = JsonConvert.SerializeObject(list, Formatting.Indented);
-        File.WriteAllText($@"{Plugin.BASE_OUTPUT_PATH}Map Markers\Map Marker Info.json", json);
+        File.WriteAllText($@"{basePath}\Map Marker Info.json", json);
     }
 
     private struct MarkerInfo {
@@ -70,6 +85,7 @@ public static class WriteMapMarkerInfo {
         public bool   surface;
         public string icon;
         public bool   isLandingSite;
+        public bool   isPhonographSong;
     }
 
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
