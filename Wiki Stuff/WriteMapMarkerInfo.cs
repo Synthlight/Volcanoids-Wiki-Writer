@@ -55,7 +55,7 @@ public static class WriteMapMarkerInfo {
         Debug.Log($"Songs count (Resources.FindObjectsOfTypeAll<PhonographCylinder>()): {songs.Length}");
 
         list.AddRange(songs.Select(song => new MarkerInfo {
-            position         = new(song.gameObject.transform.position.x, 0, song.gameObject.transform.position.y),
+            position         = new(song.gameObject.transform.position.x, song.gameObject.transform.position.y, song.gameObject.transform.position.z),
             tooltip          = song.GetName(),
             level            = song.gameObject.layer,
             icon             = "Phonograph_Icon",
