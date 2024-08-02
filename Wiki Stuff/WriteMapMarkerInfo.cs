@@ -56,7 +56,7 @@ public static class WriteMapMarkerInfo {
 
         list.AddRange(songs.Select(song => new MarkerInfo {
             position         = new(song.gameObject.transform.position.x, song.gameObject.transform.position.y, song.gameObject.transform.position.z),
-            tooltip          = song.GetName(),
+            tooltip          = song.Item.GetLocalizedName(),
             level            = song.gameObject.layer,
             icon             = "Phonograph_Icon",
             isPhonographSong = true,
