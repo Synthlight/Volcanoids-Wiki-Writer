@@ -63,6 +63,17 @@ public static class WriteMapMarkerInfo {
             surface          = true
         }));
 
+        var fridge = GameObject.Find("FridgeShelter");
+
+        list.Add(new() {
+            position = new(fridge.gameObject.transform.position.x, fridge.gameObject.transform.position.y, fridge.gameObject.transform.position.z),
+            tooltip  = "The Fridge",
+            level    = fridge.gameObject.layer,
+            icon     = "The_Fridge",
+            isFridge = true,
+            surface  = true
+        });
+
         var basePath = $"{Plugin.BASE_OUTPUT_PATH}Map Markers";
         if (!Directory.Exists(basePath)) Directory.CreateDirectory(basePath);
 
@@ -86,6 +97,7 @@ public static class WriteMapMarkerInfo {
         public string icon;
         public bool   isLandingSite;
         public bool   isPhonographSong;
+        public bool   isFridge;
     }
 
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
